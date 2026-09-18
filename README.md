@@ -5,6 +5,8 @@ This project measures that decision on a deterministic, mutation-generated
 benchmark. It ranks every function in a vendored Python library from only the
 failure evidence an agent would have.
 
+**Live dashboard:** [Explore the benchmark results and individual failure cases](https://wheres-the-bug--advait0801.replit.app)
+
 ## Exact labels, without hand-labelling
 
 The benchmark vendors `toolz` 1.1.0 at upstream commit
