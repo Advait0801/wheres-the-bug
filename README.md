@@ -145,7 +145,7 @@ Python 3.11 and all dependencies are pinned in `pyproject.toml` and `uv.lock`.
 To verify the committed artifacts and open the dashboard:
 
 ```bash
-uv sync --python 3.11
+uv sync --python 3.11 --extra benchmark
 uv run pytest
 uv run python -m faultloc serve
 ```

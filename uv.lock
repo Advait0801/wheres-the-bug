@@ -142,7 +142,9 @@ wheels = [
 name = "faultloc-benchmark"
 version = "0.1.0"
 source = { virtual = "." }
-dependencies = [
+
+[package.optional-dependencies]
+benchmark = [
     { name = "fastapi" },
     { name = "httpx" },
     { name = "pytest" },
@@ -150,23 +152,21 @@ dependencies = [
     { name = "tiktoken" },
     { name = "uvicorn" },
 ]
-
-[package.optional-dependencies]
 dense = [
     { name = "fastembed" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi", specifier = "==0.128.8" },
+    { name = "fastapi", marker = "extra == 'benchmark'", specifier = "==0.128.8" },
     { name = "fastembed", marker = "extra == 'dense'", specifier = "==0.7.4" },
-    { name = "httpx", specifier = "==0.28.1" },
-    { name = "pytest", specifier = "==8.4.2" },
-    { name = "rank-bm25", specifier = "==0.2.2" },
-    { name = "tiktoken", specifier = "==0.14.0" },
-    { name = "uvicorn", specifier = "==0.39.0" },
+    { name = "httpx", marker = "extra == 'benchmark'", specifier = "==0.28.1" },
+    { name = "pytest", marker = "extra == 'benchmark'", specifier = "==8.4.2" },
+    { name = "rank-bm25", marker = "extra == 'benchmark'", specifier = "==0.2.2" },
+    { name = "tiktoken", marker = "extra == 'benchmark'", specifier = "==0.14.0" },
+    { name = "uvicorn", marker = "extra == 'benchmark'", specifier = "==0.39.0" },
 ]
-provides-extras = ["dense"]
+provides-extras = ["benchmark", "dense"]
 
 [[package]]
 name = "filelock"

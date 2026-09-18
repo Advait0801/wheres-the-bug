@@ -1,5 +1,5 @@
 modules = ["python-3.11"]
-run = "uv run python -m faultloc serve"
+run = "uv run --extra benchmark python -m faultloc serve"
 
 packager.language = "python3"
 
@@ -9,6 +9,6 @@ packageSearch = false
 enabledForHosting = false
 
 [deployment]
-build = "UV_PROJECT_ENVIRONMENT=.venv uv sync --frozen"
-run = [".venv/bin/python", "-m", "faultloc", "serve"]
+build = "UV_PROJECT_ENVIRONMENT=.deployment-venv uv sync --frozen --extra benchmark"
+run = [".deployment-venv/bin/python", "-m", "faultloc", "serve"]
 deploymentTarget = "cloudrun"
