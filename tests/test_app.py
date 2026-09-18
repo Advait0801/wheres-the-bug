@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -35,6 +36,8 @@ def test_case_explorer_api() -> None:
     detail = CLIENT.get(f"/api/cases/{summaries[0]['case_id']}").json()
     assert detail["diff"]
     assert detail["traceback_text"]
+    assert "target/" in detail["traceback_text"]
+    assert "/Users/" not in json.dumps(detail)
     assert detail["function_qualified_name"]
     expected_localizers = set(CLIENT.get("/api/results").json()["localizers"])
     assert set(detail["localizer_results"]) == expected_localizers
