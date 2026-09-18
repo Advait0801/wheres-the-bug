@@ -1,0 +1,22 @@
+{
+  "cases": 373,
+  "counts": {
+    "invalid": 0,
+    "killed": 373,
+    "survived": 27,
+    "timeout": 0
+  },
+  "enumerated_unique_mutants": 1107,
+  "functions_represented": 153,
+  "max_mutants": 400,
+  "max_per_function": 4,
+  "seed": 1729,
+  "selected_mutants": 400,
+  "split": {
+    "dev_cases": 187,
+    "dev_functions": 75,
+    "test_cases": 186,
+    "test_functions": 75
+  },
+  "timeout_seconds": 20.0
+}
