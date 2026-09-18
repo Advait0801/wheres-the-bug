@@ -129,10 +129,13 @@ def evaluate(
     split: str = "dev",
     include_dense: bool = False,
     include_experiments: bool = False,
+    final_test: bool = False,
 ) -> dict[str, Any]:
     """Evaluate localizers and persist measured results for one split."""
-    if split != "dev":
+    if split != "dev" and not (split == "test" and final_test):
         raise ValueError("the test split is locked until the final evaluation")
+    if final_test:
+        _prepare_final_evaluation(root)
     skipped_localizers: dict[str, str] = {}
     if localizers is None:
         from faultloc.localizers import build_phase4_localizers
@@ -185,11 +188,41 @@ def evaluate(
         "skipped_localizers": skipped_localizers,
         "comparisons": comparisons,
     }
-    output_path = root / "results" / "results.json"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    serialized = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    if final_test:
+        _write_atomic(root / "results" / "test_results.json", serialized)
+    _write_atomic(root / "results" / "results.json", serialized)
     print(markdown_table(result))
     return result
+
+
+def _prepare_final_evaluation(root: Path) -> None:
+    """Archive dev results and prevent accidental test-set re-evaluation."""
+    results_dir = root / "results"
+    current_path = results_dir / "results.json"
+    dev_path = results_dir / "dev_results.json"
+    test_path = results_dir / "test_results.json"
+    if test_path.exists():
+        raise RuntimeError(
+            "final test results already exist; refusing to evaluate the test split again"
+        )
+    if not current_path.exists():
+        raise RuntimeError("development results are missing; run the dev evaluation first")
+    current_text = current_path.read_text()
+    current = json.loads(current_text)
+    if current.get("split") != "dev":
+        raise RuntimeError("results/results.json is not a development result cache")
+    if dev_path.exists() and dev_path.read_text() != current_text:
+        raise RuntimeError("results/dev_results.json conflicts with the current dev cache")
+    if not dev_path.exists():
+        _write_atomic(dev_path, current_text)
+
+
+def _write_atomic(path: Path, contents: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(contents)
+    temporary.replace(path)
 
 
 def markdown_table(result: dict[str, Any]) -> str:

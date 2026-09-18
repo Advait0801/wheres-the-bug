@@ -5,7 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from faultloc.eval import evaluate, evaluate_localizer, load_cases
+from faultloc.eval import (
+    _prepare_final_evaluation,
+    evaluate,
+    evaluate_localizer,
+    load_cases,
+)
 from faultloc.index import CaseIndex, build_index
 
 
@@ -52,3 +57,18 @@ def test_test_split_is_locked(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="locked"):
         evaluate(root=tmp_path, split="test")
 
+
+def test_final_evaluation_archives_dev_and_refuses_a_second_run(
+    tmp_path: Path,
+) -> None:
+    results = tmp_path / "results"
+    results.mkdir()
+    dev_contents = json.dumps({"split": "dev", "case_count": 2}) + "\n"
+    (results / "results.json").write_text(dev_contents)
+
+    _prepare_final_evaluation(tmp_path)
+
+    assert (results / "dev_results.json").read_text() == dev_contents
+    (results / "test_results.json").write_text('{"split": "test"}\n')
+    with pytest.raises(RuntimeError, match="already exist"):
+        _prepare_final_evaluation(tmp_path)
