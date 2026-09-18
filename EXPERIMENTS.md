@@ -258,3 +258,20 @@ matched the function and mutation-site counts exactly.
   the held-out test split was not evaluated.
 - **Decision:** **KEEP.** The Run path serves only cached artifacts and is
   independent of the expensive benchmark pipeline.
+
+## Final held-out evaluation
+
+- **Protocol:** Froze A6 after development selection, archived the development
+  cache, and ran the 186-case test split once. A persisted test artifact now
+  prevents an accidental second run.
+- **Test result:** A6 reached 52.151% Top-1 [45.161, 59.140], 59.677% Top-5
+  [52.688, 66.667], 0.562 MRR [0.495, 0.628], median rank 1, 530.5 median
+  tokens-to-hit, and 10.3861 ms p50 latency. BM25 reached 40.323% Top-1 and
+  0.491 MRR. A6's paired advantages over BM25 were 11.828 Top-1 percentage
+  points [5.914, 17.742] and 0.071 MRR [0.020, 0.123]; A6 reduced p50 latency
+  by 6.480 ms [5.184, 7.977].
+- **Error split:** On 82 assertion cases, A6 reached 40.244% Top-1 and 0.469
+  MRR. On 104 other-exception cases, it reached 61.538% Top-1 and 0.635 MRR.
+- **Decision:** **FINAL.** The routing improvement generalized on the untouched
+  functions. No technique, threshold, or ranking rule was changed after this
+  result.

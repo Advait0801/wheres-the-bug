@@ -111,7 +111,7 @@ def create_app(root: Path | None = None) -> FastAPI:
     data = DashboardData(project_root)
     dashboard = FastAPI(
         title="Fault-localization benchmark",
-        description="Cached development-set benchmark results",
+        description="Cached mutation-benchmark results",
         version="0.1.0",
     )
 
@@ -271,7 +271,7 @@ function renderResults(){
   for(const name of results.localizer_order){const m=results.localizers[name].metrics,tr=document.createElement('tr'); if(name==='a6_router')tr.className='winner'; const tag=name==='a6_router'?'<span class="tag">winner</span>':name==='a7_clean_bm25'?'<span class="tag reverted">reverted</span>':''; tr.innerHTML=`<td class="method">${esc(labels[name]||name)}${tag}</td><td>${metric(m.top_1,'pct')}</td><td>${metric(m.top_5,'pct')}</td><td>${metric(m.mrr)}</td><td>${metric(m.mean_rank,'rank')}</td><td>${metric(m.median_rank,'rank')}</td><td>${metric(m.median_tokens_to_hit,'rank')}</td><td>${metric(m.p50_latency_ms,'ms')}</td><td>${metric(m.p95_latency_ms,'ms')}</td>`; body.appendChild(tr);}
   const winner=results.localizers.a6_router||results.localizers[results.localizer_order[0]];
   const baseline=results.localizers.l2_bm25;
-  if(results.localizers.a6_router&&baseline){const wm=winner.metrics,bm=baseline.metrics,gain=100*(wm.top_1.estimate-bm.top_1.estimate); document.getElementById('finding').innerHTML=`<span class="finding-kicker">${esc(split)} finding</span><p><strong>Exception-aware routing finds the buggy function first in ${(100*wm.top_1.estimate).toFixed(1)}% of cases</strong>, versus ${(100*bm.top_1.estimate).toFixed(1)}% for BM25—a ${gain.toFixed(1)} percentage-point gain.</p>`; document.getElementById('winner-note').textContent=`A6 is highlighted for the strongest Top-1 and MRR, median rank ${wm.median_rank.estimate.toFixed(0)}, and ${wm.median_tokens_to_hit.estimate.toFixed(0)} median tokens-to-hit. Its higher mean rank reflects a smaller tail of difficult cases.`;}
+  if(results.localizers.a6_router&&baseline){const wm=winner.metrics,bm=baseline.metrics,gain=100*(wm.top_1.estimate-bm.top_1.estimate); document.getElementById('finding').innerHTML=`<span class="finding-kicker">${esc(split)} finding</span><p><strong>Exception-aware routing finds the buggy function first in ${(100*wm.top_1.estimate).toFixed(1)}% of cases</strong>, versus ${(100*bm.top_1.estimate).toFixed(1)}% for BM25—an ${gain.toFixed(1)} percentage-point gain.</p>`; document.getElementById('winner-note').textContent=`A6 is highlighted for the strongest Top-1 and MRR, median rank ${wm.median_rank.estimate.toFixed(0)}, and ${wm.median_tokens_to_hit.estimate.toFixed(0)} median tokens-to-hit. Its higher mean rank reflects a smaller tail of difficult cases.`;}
   const groups=Object.entries(winner.breakdowns.exception_type).sort((a,b)=>b[1].cases-a[1].cases), common=groups.filter(([,x])=>x.cases>=5), rare=groups.filter(([,x])=>x.cases<5);
   document.getElementById('breakdown').innerHTML=common.map(breakCard).join('');
   document.getElementById('rare-breakdown').innerHTML=rare.length?`<details class="rare"><summary>Show ${rare.length} low-sample error types (fewer than 5 cases)</summary><div class="rare-list">${rare.map(([name,x])=>`<div class="rare-row"><span>${esc(name)} · n=${x.cases}</span><strong>${(100*x.metrics.top_1.estimate).toFixed(1)}% Top-1</strong></div>`).join('')}</div></details>`:'';
